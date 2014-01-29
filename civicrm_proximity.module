@@ -1,0 +1,169 @@
+<?php
+
+  /**
+   * Define some variables.
+   */
+  define('CIVICRM_PROXIMITY_DEGREE_TO_RADIANS', 0.01745329252);
+  define('CIVICRM_PROXIMITY_KM_PER_LAT', 111.321);
+  define('CIVICRM_PROXIMITY_DEFAULT_UNIT', 'km');
+  define('CIVICRM_PROXIMITY_GOOGLE_GEOCODER_URL', 'http://maps.google.com/maps/api/geocode/json?');
+  define('CIVICRM_PROXIMITY_GOOGLE_STATUS_OK', 'OK');
+  define('CIVICRM_PROXIMITY_SQL_GREAT_CIRCLE', '(6371.0 * ACOS(SIN((:lat1 * RADIANS(1))) * SIN((:lat2 * RADIANS(1))) + COS((:lat1 * RADIANS(1))) * COS((:lat2 * RADIANS(1))) * COS((:lon1 * RADIANS(1)) - (:lon2 * RADIANS(1)))))');
+
+  /**
+   * Implementation of hook_init().
+   */
+  function civicrm_proximity_init() {
+
+    drupal_add_css(drupal_get_path('module', 'civicrm_proximity') .'/civicrm_proximity.css');
+
+  }
+
+  /**
+   * Implementation of hook_views_api().
+   */
+  function civicrm_proximity_views_api() {
+
+    return array(
+      'api'  => 3,
+      'path' => drupal_get_path('module', 'civicrm_proximity'),
+    );
+
+  }
+
+  /**
+   * Implementation of hook_measurement_units()
+   * 
+   * Expose available units of measurement. To perform conversion
+   * we must implement, for each unit, its respective:
+   * hook_measurement_units_convert(<UNIT>, <VALUE>).
+   */
+  function civicrm_proximity_measurement_units() {
+
+    return array(
+      'km' => array(
+        'long'  => t('Kilometers'),
+        'short' => t('Km'),
+        'const' => 0.62137,
+       ),
+      'miles' => array(
+        'long'  => t('Miles'),
+        'short' => t('Mi'),
+        'const' => 1.609344,
+       ),
+    );
+
+  }
+
+  /**
+   * Gets available unit of measurement.
+   */
+  function civicrm_proximity_get_available_units() {
+
+    return civicrm_proximity_measurement_units();
+
+  }
+
+  /**
+   * Gets available unit of measurement as select options.
+   */
+  function civicrm_proximity_get_available_units_for_select() {
+
+    $units = array();
+
+    foreach (civicrm_proximity_measurement_units() as $unit => $info) {
+      $units[$unit] = $info['long'];
+    }
+
+    return $units;
+
+  }
+
+  /**
+   * Conversion helper: convert from $unit to Kilometers.
+   */
+  function civicrm_proximity_measurement_units_convert($unit, $value) {
+
+    $units = civicrm_proximity_measurement_units();
+
+    if ($unit !== "km" && $unit !== "kilometers") {
+      if (isset($units[$unit]) && is_numeric($units[$unit]['const'])) {
+        return $value * $units[$unit]['const'];
+      }
+    }
+
+    return $value;
+
+  }
+
+  /**
+   * Conversion helper: convert from Kilometers to $unit.
+   */
+  function civicrm_proximity_measurement_units_convert_back($unit, $value) {
+
+    $units = civicrm_proximity_measurement_units();
+
+    if (isset($units[$unit]) && is_numeric($units[$unit]['const']) && $units[$unit]['const'] !== 0) {
+      return $value / $units[$unit]['const'];
+    }
+
+    return $value;
+
+  }
+
+  /**
+   * Query Google geocoding web service.
+   * 
+   * @param $address Address or location name.
+   * @return Geocoder response.
+   */
+  function civicrm_proximity_geocode($address) {
+
+    $locs = $args = array();
+
+    $args['address'] = str_replace(' ', '+', $address);
+
+    $language = language_default();
+    $args['language'] = $language->language;
+    $args['oe'] = 'utf-8';
+    $args['sensor'] = 'false';
+
+    $query = http_build_query($args, '', '&');
+    
+    if (function_exists("curl_init")) {
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, CIVICRM_PROXIMITY_GOOGLE_GEOCODER_URL . $query);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      $result = curl_exec($ch);
+      curl_close($ch);
+    }
+    else {
+      $result = file_get_contents(CIVICRM_PROXIMITY_GOOGLE_GEOCODER_URL . $query);
+    }
+    
+    $response = json_decode($result);
+
+    if ($response->status == CIVICRM_PROXIMITY_GOOGLE_STATUS_OK) {
+      foreach ($response->results as $result) {
+        $loc = $components = array();
+
+        foreach ($result->address_components as $component) {
+          $key = $component->types[0];
+          $components[$key] = $component->long_name;
+
+          if ($key == 'country') {
+            $components['country_code'] = $component->short_name;
+          }
+        }
+
+        $components['street_address'] = $loc['address'] = $result->formatted_address;
+        $loc['components'] = $components;
+        $loc['location'] = (array) $result->geometry->location;
+        $loc['bounds'] = (array) $result->geometry->viewport;
+        $locs[] = $loc;
+      }
+    }
+
+    return $locs;
+
+  }

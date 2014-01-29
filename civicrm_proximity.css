@@ -1,0 +1,9 @@
+.views-widget-filter-circle .views-operator,
+.views-widget-filter-circle .form-item {
+  float: left;
+  margin-right: 10px;
+}
+
+.views-widget-filter-circle .form-item-circle-location {
+  clear: both;
+}

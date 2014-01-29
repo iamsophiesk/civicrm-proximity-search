@@ -1,0 +1,15 @@
+name = CiviCRM Proximity Search
+description = Geographical proximity search for CiviCRM.
+core = 7.x
+package = CiviCRM
+dependencies[] = civicrm
+dependencies[] = views
+
+; views includes
+files[] = civicrm_proximity.views.inc
+
+; views handlers
+files[] = views/civicrm_proximity_handler_field.inc
+files[] = views/civicrm_proximity_handler_filter.inc
+files[] = views/civicrm_proximity_handler_filter_circle.inc
+files[] = views/civicrm_proximity_handler_sort.inc

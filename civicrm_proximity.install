@@ -1,0 +1,51 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the civicrm_proximity module.
+ *
+ */
+
+/**
+ * Implementation of hook_schema_alter().
+ */
+function civicrm_proximity_schema_alter(&$schema) {
+
+  if (!civicrm_initialize()) {
+    return;
+  }
+
+  $schema['civicrm_address']['fields']['distance'] = array(
+    'type'        => 'float',
+    'size'        => 'big',
+    'not null'    => TRUE,
+    'unsigned'    => TRUE,
+    'default'     => 0,
+    'description' => 'Field added by civicrm_proximity.',
+  );
+
+  return $schema;
+
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function civicrm_proximity_install() {
+
+  if (!civicrm_initialize()) {
+    return;
+  }
+
+  $schema = drupal_get_schema('civicrm_address');
+  db_add_field('civicrm_address', 'distance', $schema['fields']['distance']);
+
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function civicrm_proximity_uninstall() {
+
+  db_drop_field('civicrm_address', 'distance');
+
+}
