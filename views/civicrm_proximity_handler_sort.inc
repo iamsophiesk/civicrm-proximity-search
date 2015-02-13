@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class civicrm_proximity_handler_sort extends views_handler_sort {
 
@@ -55,7 +55,6 @@ class civicrm_proximity_handler_sort extends views_handler_sort {
       $field = $this->real_field;
       $order = $this->options['order'];
       $this->query->add_orderby($alias, $field, $order);
-      watchdog('sophie', 'more debugs = <pre>' . print_r($this->query, true) . '</pre>');
     }
 
   }
