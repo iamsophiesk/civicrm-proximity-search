@@ -4,7 +4,6 @@
  * Implementation of hook_views_data_alter().
  */
 function civicrm_proximity_views_data_alter(&$data) {
-
   $data['civicrm_address']['circle'] = array(
     'title'  => t('Circular search'),
     'help'   => t('Uses the great-circle distance formula to return locations within a circular area.'),
@@ -21,7 +20,6 @@ function civicrm_proximity_views_data_alter(&$data) {
       'click sortable' => TRUE,
     ),
   );
-  
-  return $data;
 
+  return $data;
 }

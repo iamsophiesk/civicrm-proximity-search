@@ -6,7 +6,6 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
    * Process operator.
    */
   function op_process($op = 'simple', $field) {
-
     parent::op_process($op, $field);
 
     if (!is_null($this->value['lat']) && !is_null($this->value['lon'])) {
@@ -99,13 +98,10 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
           );
         }
       }
-
     }
-
   }
 
   function table_formula($lat, $lon, $table) {
-
     $args = array(
       ':lat1' => $table . '.geo_code_1',
       ':lon1' => $table . '.geo_code_2',
@@ -116,13 +112,10 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
     $great_circle = strtr(CIVICRM_PROXIMITY_SQL_GREAT_CIRCLE, $args);
 
     return "$great_circle";
-
   }
 
   function table_alias() {
-
     return $this->table_alias;
-
   }
 
   function formula_alias() {
@@ -136,7 +129,6 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
    * @param float $dist: The radius of the search circle
    */
   function calculate_coordinates($lat, $lon, $dist) {
-
     $vals = array();
 
     $vals['lon1'] = $lon - $dist / abs(cos(deg2rad($lat)) * 111);
@@ -146,7 +138,6 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
     $vals['lat2'] = $lat + ($dist / 111);
 
     return $vals;
-
   }
 
 }

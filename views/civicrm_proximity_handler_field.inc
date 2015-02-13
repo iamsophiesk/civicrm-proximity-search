@@ -6,7 +6,6 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
    * Overwrite views_handler_field_numeric::option_definition().
    */
   function option_definition() {
-
     $options = parent::option_definition();
 
     $options['location_provider'] = array('default' => '');
@@ -17,7 +16,6 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
     $this->definition['float'] = TRUE;
 
     return $options;
-
   }
 
   /**
@@ -25,7 +23,6 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
    * Overwrite views_handler_field_numeric::options_form().
    */
   function options_form(&$form, &$form_state) {
-
     parent::options_form($form, $form_state);
 
     if ($handlers = $this->view->display_handler->get_handlers('filter')) {
@@ -48,36 +45,32 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
         '#options' => $options,
       );
     }
-
   }
 
   /*
    * Overwrite views_handler_field_numeric::query().
    */
   function query() {
-
     $lp      = $this->options['location_provider'];
     $handler = $this->view->display_handler->get_handler('filter', $lp);
     $alias   = $handler->table_alias();
 
-    if ($handler 
-    && $handler->value['location'] 
+    if ($handler
+    && $handler->value['location']
     && isset($this->query->table_queue[$alias]) ) {
       $table = $this->options['table'];
       $field = $this->view->query->fields['civicrm_address_distance']['field'];
 
       $this->field_alias = $this->query->add_field($table, $field);
     }
-
   }
 
   /*
    * Overwrite views_handler_field_numeric::render().
    */
   function render($values) {
-
     $value = $values;
-    
+
     if (isset($value->distance)) {
 
       // Get the handler.
@@ -121,7 +114,6 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
 
       return $this->sanitize_value($pre . $value . ' '. $short .' '. $suf);
     }
-
   }
 
 }

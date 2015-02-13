@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
 
@@ -6,22 +6,16 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
   var $no_single = FALSE;
 
   function op_between($field) {
-
     $this->op_process('between', $field);
-
   }
 
   function op_simple($field) {
-
     $this->op_process('simple', $field);
-
   }
 
   function op_process($op = 'simple', $field) {
-
     $this->secure_input();
     $this->process_location_proximity();
-
   }
 
   /**
@@ -29,7 +23,6 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
    * Overwrite of views_handler_filter_numeric::admin_summary().
    */
   function admin_summary() {
-
     if (!empty($this->options['exposed'])) {
       return t('exposed');
     }
@@ -39,29 +32,27 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
 
     if (in_array($this->operator, $this->operator_values(2))) {
       $output .= ' ' . t('@min and @max @unit from @location', array(
-        '@min'      => $this->value['min'], 
-        '@max'      => $this->value['max'], 
-        '@unit'     => $this->value['unit'], 
+        '@min'      => $this->value['min'],
+        '@max'      => $this->value['max'],
+        '@unit'     => $this->value['unit'],
         '@location' => $this->value['location'],
       ));
-    } 
+    }
     elseif (in_array($this->operator, $this->operator_values(1))) {
       $output .= ' ' . t('@value @unit from @location', array(
         '@value'    => $this->value['value'],
-        '@unit'     => $this->value['unit'], 
+        '@unit'     => $this->value['unit'],
         '@location' => $this->value['location'],
       ));
     }
 
     return $output;
-
-  }  
+  }
 
   /**
    * Overwrite of views_handler_filter::options_defintion().
    */
   function option_definition() {
-
     $options = parent::option_definition();
     $options['operator'] = array('default' => '<');
 
@@ -70,12 +61,11 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
     $options['value']['contains']['unit']     = array('default' => $unit);
     $options['value']['contains']['location'] = array('default' => '');
 
-    $options['expose']['contains']['use_unit']     = array('default' => FALSE);
-    $options['expose']['contains']['unit']         = array('default' => 'unit');
-    $options['expose']['contains']['location']     = array('default' => 'location');
+    $options['expose']['contains']['use_unit'] = array('default' => FALSE);
+    $options['expose']['contains']['unit']     = array('default' => 'unit');
+    $options['expose']['contains']['location'] = array('default' => 'location');
 
     return $options;
-
   }
 
   /**
@@ -83,13 +73,11 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
    * Overwrite of views_handler_filter::expose_options().
    */
   function expose_options() {
-
     parent::expose_options();
 
     $this->options['expose']['use_unit'] = FALSE;
     $this->options['expose']['unit'] = 'unit';
     $this->options['expose']['location'] = 'location';
-
   }
 
   /**
@@ -97,20 +85,17 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
    * Overwrite of views_handler_filter::expose_form().
    */
   function expose_form(&$form, &$form_state) {
-
     parent::expose_form($form, $form_state);
 
     $this->expose_option_form($form, 'unit', 'unit of measurement');
     $this->expose_option_form($form, 'location', 'location');
-
   }
-  
+
   /**
    * Provide a simple textfield for equality
    * Overwrite of views_handler_filter_numeric::value_form().
    */
   function value_form(&$form, &$form_state) {
-
     parent::value_form($form, $form_state);
 
     drupal_add_css(drupal_get_path('module', 'civicrm_proximity') .'/civicrm_proximity.css');
@@ -142,29 +127,25 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
         'class' => array('civicrm-proximity civicrm-proximity-location'),
       ),
     );
-
   }
-  
+
   /**
    * Provide a form for setting the operator.
    * Overwrite of views_handler_filter::operator_form().
    */
   function operator_form(&$form, &$form_state) {
-
     parent::operator_form($form, $form_state);
 
     // At the end of the day proximity search is a rough estimation.
     $unset = array('<=', '=', '!=', '>=');
     $this->unset_attributes($form['operator']['#options'], $unset);
-
   }
-  
+
   /**
    * Render our chunk of the exposed filter form when selecting
    * Overwrite of views_handler_filter::exposed_form().
    */
   function exposed_form(&$form, &$form_state) {
-
     if (empty($this->options['exposed'])) {
       return;
     }
@@ -180,7 +161,7 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
     parent::exposed_form($form, $form_state);
 
     if ($force_operator) {
-      $operator = $this->options['expose']['operator']; 
+      $operator = $this->options['expose']['operator'];
 
       $form[$operator]['#type'] = 'hidden';
       $op = $form[$operator]['#value'] = $form[$operator]['#default_value'];
@@ -243,7 +224,7 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
       // Add meaningful suffix to value.
       if (isset($identifier['value'])) {
         if ($force_operator) {
-          $field_prefix = $operators[$this->options['operator']]; 
+          $field_prefix = $operators[$this->options['operator']];
         }
         else {
           $field_prefix = '';
@@ -274,7 +255,6 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
    * Validate the exposed filter form
    */
   function exposed_validate(&$form, &$form_state) {
-
     parent::exposed_validate($form, $form_state);
 
     // Sanitize "value", "min" and "max"
@@ -320,14 +300,12 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
         form_set_error($identifier .']['. $location, t('Location not found; please try again.'));
       }
     }
-
   }
 
   /**
    * Distance from a location: query is a string and it will be geolocated.
    */
   function process_location_proximity() {
-
     $this->value['lat'] = $this->value['lon'] = NULL;
 
     if ($this->response = civicrm_proximity_geocode($this->value['location'])) {
@@ -336,11 +314,9 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
     }
 
     drupal_alter('process_location_proximity', $this->value);
-
   }
-  
-  function secure_input() {
 
+  function secure_input() {
     $this->value['value']    = isset($this->value['value']) ? $this->value['value'] : $this->options['value']['value'];
     $this->value['min']      = isset($this->value['min'])   ? $this->value['min']   : $this->options['value']['min'];
     $this->value['max']      = isset($this->value['max'])   ? $this->value['max']   : $this->options['value']['max'];
@@ -351,25 +327,19 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
     $this->value['value'] = $this->value['value'];
     $this->value['min']   = $this->value['min'];
     $this->value['max']   = $this->value['max'];
-
   }
 
   function unset_attributes(&$item, $attributes) {
-
     foreach ($attributes as $name) {
       unset($item[$name]);
     }
-
   }
 
   function clean_exposed_filter_item(&$item) {
-
     $this->unset_attributes($item, array('#prefix', '#suffix', '#title', '#description'));
-
   }
 
   function expose_option_form(&$form, $name, $title) {
-
     $form['expose'][$name] = array(
       '#type'          => 'checkbox',
       '#title'         => t('Unlock @title', array('@title' => $title)),
@@ -384,11 +354,9 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
       '#size'          => 40,
       '#description'   => t('This will appear in the URL after the ? to identify this filter.'),
     );
-
   }
 
   function rename_exposed_filter_item(&$form, $name) {
-
     $value      = $this->options['expose'][$name];
     $identifier = $this->options['expose']['identifier'];
 
@@ -398,17 +366,13 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
     }
 
     return $value;
-
   }
 
   function filter_item_is_exposed($name) {
- 
     return !empty($this->options['expose'][$name]) && !empty($this->options['expose'][$name]);
-
   }
 
   function get_suffix() {
-
     $suffix = '';
     $units  = civicrm_proximity_get_available_units();
 
@@ -418,7 +382,6 @@ class civicrm_proximity_handler_filter extends views_handler_filter_numeric {
     }
 
     return t($suffix, array('@unit' => $units[$this->options['value']['unit']]['long'], '@location' => $this->options['value']['location']));
-
   }
 
 }
