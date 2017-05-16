@@ -1,11 +1,14 @@
 <?php
 
+/**
+ * Distance field handler
+ */
 class civicrm_proximity_handler_field extends views_handler_field_numeric {
 
   /**
    * Overwrite views_handler_field_numeric::option_definition().
    */
-  function option_definition() {
+  public function option_definition() {
     $options = parent::option_definition();
 
     $options['location_provider'] = array('default' => '');
@@ -22,7 +25,7 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
    * Basic options for all sort criteria
    * Overwrite views_handler_field_numeric::options_form().
    */
-  function options_form(&$form, &$form_state) {
+  public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
     if ($handlers = $this->view->display_handler->get_handlers('filter')) {
@@ -35,7 +38,7 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
           $title = $handler->definition['title'];
           $admin = $handler->admin_summary();
 
-          $options[$name] = $group .': '. $title .' ('. $admin .')';
+          $options[$name] = $group . ': ' . $title . ' (' . $admin . ')';
         }
       }
 
@@ -47,17 +50,17 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
     }
   }
 
-  /*
+  /**
    * Overwrite views_handler_field_numeric::query().
    */
-  function query() {
+  public function query() {
     $lp      = $this->options['location_provider'];
     $handler = $this->view->display_handler->get_handler('filter', $lp);
     $alias   = $handler->table_alias();
 
     if ($handler
     && $handler->value['location']
-    && isset($this->query->table_queue[$alias]) ) {
+    && isset($this->query->table_queue[$alias])) {
       $table = $this->options['table'];
       $field = $this->view->query->fields['civicrm_address_distance']['field'];
 
@@ -65,17 +68,17 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
     }
   }
 
-  /*
+  /**
    * Overwrite views_handler_field_numeric::render().
    */
-  function render($values) {
+  public function render($values) {
     $value = $values;
 
     if (isset($value->distance)) {
 
       // Get the handler.
       $loc_prov = $this->options['location_provider'];
-      $handler  = $this->view->display_handler->get_handler('filter', $loc_prov);
+      $handler = $this->view->display_handler->get_handler('filter', $loc_prov);
 
       // Get the unit of measurement.
       $exp_unit = $handler->value[$handler->options['expose']['unit']];
@@ -112,7 +115,7 @@ class civicrm_proximity_handler_field extends views_handler_field_numeric {
       $short = $units[$unit]['short'];
       $suf   = $this->options['suffix'];
 
-      return $this->sanitize_value($pre . $value . ' '. $short .' '. $suf);
+      return $this->sanitize_value($pre . $value . ' ' . $short . ' ' . $suf);
     }
   }
 

@@ -1,8 +1,10 @@
 <?php
 
 /**
+ * @file
  * Define some variables.
  */
+
 define('CIVICRM_PROXIMITY_DEGREE_TO_RADIANS', 0.01745329252);
 define('CIVICRM_PROXIMITY_KM_PER_LAT', 111.321);
 define('CIVICRM_PROXIMITY_DEFAULT_UNIT', 'km');
@@ -11,14 +13,14 @@ define('CIVICRM_PROXIMITY_GOOGLE_STATUS_OK', 'OK');
 define('CIVICRM_PROXIMITY_SQL_GREAT_CIRCLE', '(6371.0 * ACOS(SIN((:lat1 * RADIANS(1))) * SIN((:lat2 * RADIANS(1))) + COS((:lat1 * RADIANS(1))) * COS((:lat2 * RADIANS(1))) * COS((:lon1 * RADIANS(1)) - (:lon2 * RADIANS(1)))))');
 
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  */
 function civicrm_proximity_init() {
-  drupal_add_css(drupal_get_path('module', 'civicrm_proximity') .'/civicrm_proximity.css');
+  drupal_add_css(drupal_get_path('module', 'civicrm_proximity') . '/civicrm_proximity.css');
 }
 
 /**
- * Implementation of hook_views_api().
+ * Implements hook_views_api().
  */
 function civicrm_proximity_views_api() {
   return array(
@@ -28,7 +30,7 @@ function civicrm_proximity_views_api() {
 }
 
 /**
- * Implementation of hook_measurement_units()
+ * Implements hook_measurement_units()
  *
  * Expose available units of measurement. To perform conversion
  * we must implement, for each unit, its respective:
@@ -40,12 +42,12 @@ function civicrm_proximity_measurement_units() {
       'long'  => t('Kilometers'),
       'short' => t('Km'),
       'const' => 0.62137,
-     ),
+    ),
     'miles' => array(
       'long'  => t('Miles'),
       'short' => t('Mi'),
       'const' => 1.609344,
-     ),
+    ),
   );
 }
 
@@ -100,7 +102,9 @@ function civicrm_proximity_measurement_units_convert_back($unit, $value) {
 /**
  * Query Google geocoding web service.
  *
- * @param $address Address or location name.
+ * @param $address
+ *   Address or location name.
+ *
  * @return Geocoder response.
  */
 function civicrm_proximity_geocode($address) {

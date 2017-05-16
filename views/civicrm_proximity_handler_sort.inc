@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Views sorting handler
+ */
 class civicrm_proximity_handler_sort extends views_handler_sort {
 
-  function option_definition() {
+  /**
+   *
+   */
+  public function option_definition() {
 
     $options = parent::option_definition();
 
@@ -12,9 +18,9 @@ class civicrm_proximity_handler_sort extends views_handler_sort {
   }
 
   /**
-   * Basic options for all sort criteria
+   * Basic options for all sort criteria.
    */
-  function options_form(&$form, &$form_state) {
+  public function options_form(&$form, &$form_state) {
 
     if ($handlers = $this->view->display_handler->get_handlers('filter')) {
       $options = array();
@@ -22,13 +28,13 @@ class civicrm_proximity_handler_sort extends views_handler_sort {
       foreach ($handlers as $name => $handler) {
         $definition = $handler->definition['handler'];
 
-      	if ($definition == 'civicrm_proximity_handler_filter_circle') {
+        if ($definition == 'civicrm_proximity_handler_filter_circle') {
           $group = $handler->definition['group'];
           $title = $handler->definition['title'];
           $admin = $handler->admin_summary();
 
-      	  $options[$name] = $group .': '. $title .' ('. $admin .')';
-      	}
+          $options[$name] = $group . ': ' . $title . ' (' . $admin . ')';
+        }
       }
 
       $form['location_provider'] = array(
@@ -42,7 +48,10 @@ class civicrm_proximity_handler_sort extends views_handler_sort {
 
   }
 
-  function query() {
+  /**
+   *
+   */
+  public function query() {
 
     $this->ensure_my_table();
 
