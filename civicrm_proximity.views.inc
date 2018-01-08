@@ -1,7 +1,12 @@
 <?php
 
 /**
- * Implementation of hook_views_data_alter().
+ * @file
+ * Define views filter and field. 
+ */
+
+/**
+ * Implements hook_views_data_alter().
  */
 function civicrm_proximity_views_data_alter(&$data) {
   $data['civicrm_address']['circle'] = array(

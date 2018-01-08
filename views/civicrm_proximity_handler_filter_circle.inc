@@ -1,17 +1,20 @@
 <?php
 
+/**
+ * Circular search filter handler
+ */
 class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_filter {
 
   /**
    * Process operator.
    */
-  function op_process($op = 'simple', $field) {
+  public function op_process($op = 'simple', $field) {
     parent::op_process($op, $field);
 
     if (!is_null($this->value['lat']) && !is_null($this->value['lon'])) {
-      $latitude  = $this->value['lat'];
+      $latitude = $this->value['lat'];
       $longitude = $this->value['lon'];
-      $distance  = $this->value['value'];
+      $distance = $this->value['value'];
 
       $table   = $this->table_alias();
       $formula = $this->table_formula($latitude, $longitude, $table);
@@ -101,7 +104,10 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
     }
   }
 
-  function table_formula($lat, $lon, $table) {
+  /**
+   *
+   */
+  public function table_formula($lat, $lon, $table) {
     $args = array(
       ':lat1' => $table . '.geo_code_1',
       ':lon1' => $table . '.geo_code_2',
@@ -114,21 +120,31 @@ class civicrm_proximity_handler_filter_circle extends civicrm_proximity_handler_
     return "$great_circle";
   }
 
-  function table_alias() {
+  /**
+   *
+   */
+  public function table_alias() {
     return $this->table_alias;
   }
 
-  function formula_alias() {
+  /**
+   *
+   */
+  public function formula_alias() {
     return $this->table_alias . '_filter_' . $this->options['id'];
   }
 
   /**
    * Function to calculate the needed coordinates.
-   * @param float $lat: The starting point latitude
-   * @param float $lon: The starting point longitude
-   * @param float $dist: The radius of the search circle
+   *
+   * @param float $lat:
+   *   The starting point latitude.
+   * @param float $lon:
+   *   The starting point longitude.
+   * @param float $dist:
+   *   The radius of the search circle.
    */
-  function calculate_coordinates($lat, $lon, $dist) {
+  public function calculate_coordinates($lat, $lon, $dist) {
     $vals = array();
 
     $vals['lon1'] = $lon - $dist / abs(cos(deg2rad($lat)) * 111);
